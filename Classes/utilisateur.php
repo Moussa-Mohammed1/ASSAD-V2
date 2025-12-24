@@ -35,7 +35,7 @@ use LDAP\Result;
                 return $result;
             }
             else {
-                return false;
+                return null;
             }
         }
     }
