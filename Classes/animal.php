@@ -2,7 +2,6 @@
 include './../Config/config.php';
 class Animal
 {
-    private Database $pdo;
     private $nom;
     private $espece;
     private $alimentation;
@@ -11,9 +10,8 @@ class Animal
     private $descriptionCourte;
     private $id_habitat;
 
-    public function __construct(Database $pdo, $nom, $espece, $alimentation, $image, $paysOrigine, $descriptionCourte, $id_habitat)
+    public function __construct( $nom = "", $espece = "", $alimentation = "", $image = "", $paysOrigine = "", $descriptionCourte = "", $id_habitat = "")
     {
-        $this->pdo = $pdo;
         $this->nom = $nom;
         $this->espece = $espece;
         $this->alimentation = $alimentation;
@@ -25,8 +23,8 @@ class Animal
 
     public function getAnimals(Database $pdo)
     {
+        $pdo = new Database();
         $sql = 'SELECT a.*, h.nom FROM animal a LEFT JOIN habitat h ON a.id_habitat = h.id_habitat';
-        $this->pdo = $pdo;
         $pdo->query($sql);
         $pdo->execute();
         if ($pdo->rowCount() > 0) {
@@ -39,9 +37,9 @@ class Animal
 
     public function addAnimal()
     {
+        $pdo = new Database();
         $sql = 'INSERT INTO animal(nom,espece ,alimentation,`image` ,paysorigine ,`description`,id_habitat)
                     VALUES(:nom, :espece, :alim, :img, :pays, :descr, :idh)';
-        $pdo = $this->pdo;
         $pdo->query($sql);
         $pdo->bind(':nom', $this->nom);
         $pdo->bind(':espece', $this->espece);
@@ -55,6 +53,7 @@ class Animal
 
     public function updateAnimal($id_animal, $nom, $espece, $alimentation, $image, $paysOrigine, $descriptionCourte, $id_habitat)
     {
+        $pdo = new Database();
         $sql = 'UPDATE 
                     animal 
                 SET 
@@ -68,7 +67,6 @@ class Animal
                 WHERE 
                     id_animal = :ida';
 
-        $pdo = $this->pdo;
         $pdo->query($sql);
         $pdo->bind(':nom', $nom);
         $pdo->bind(':esp', $espece);
@@ -83,8 +81,8 @@ class Animal
 
 
     public function deleteAnimal($image){
+        $pdo =  new Database();
         $sql = 'DELETE FROM animal WHERE `image` = :img';
-        $pdo = $this->pdo;
         $pdo->query($sql);
         $pdo->bind(':img',$image);
         $pdo->execute();
@@ -92,12 +90,12 @@ class Animal
 
     public function filterHabitat($id_habitat)
     {
+        $pdo = new Database();
         $sql = 'SELECT 
                     a.*, h.nom 
                 FROM animal a
                 LEFT JOIN habitat h ON a.id_habitat = h.id_habitat
                 AND h.id_habitat = :idh';
-        $pdo = $this->pdo;
         $pdo->query($sql);
         $pdo->bind(':idh', $id_habitat);
         $pdo->execute();
