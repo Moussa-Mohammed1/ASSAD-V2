@@ -1,5 +1,4 @@
 <?php
-include './../Config/config.php';
 class EtapesVisites
 {
     private $id_etape;
