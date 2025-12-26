@@ -4,7 +4,7 @@ class Visiteur extends Utilisateur
 {
     private $isactive;
 
-    public function __construct( $nom = "", $email = "", $role = "", $MotPasseHash = "", $isactive = "")
+    public function __construct($nom = "", $email = "", $role = "", $MotPasseHash = "", $isactive = "")
     {
         parent::__construct($nom, $email, $role, $MotPasseHash);
         $this->isactive = $isactive;
@@ -16,9 +16,10 @@ class Visiteur extends Utilisateur
         $sql = 'SELECT * FROM utilisateur WHERE email = :email';
         $pdo->query($sql);
         $pdo->bind(':email', $email);
+        $pdo->execute();
         if ($pdo->rowCount() > 0) {
             $result = $pdo->single();
-            if ($result->isactive = true) {
+            if ($result->isactive == true) {
                 $sql = 'UPDATE utilisateur SET isactive = 0 WHERE email = :email';
                 $pdo->query($sql);
                 $pdo->bind(':email', $email);
@@ -34,7 +35,8 @@ class Visiteur extends Utilisateur
 
 
 
-    public function getAllVisitors(){
+    public function getAllVisitors()
+    {
         $pdo = new Database();
         $sql = 'SELECT * FROM utilisateur WHERE `role` = :rol ';
         $pdo->query($sql);
@@ -44,8 +46,7 @@ class Visiteur extends Utilisateur
             $visitors = [];
             $visitors = $pdo->get();
             return $visitors;
-        }
-        else {
+        } else {
             return null;
         }
     }
