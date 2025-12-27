@@ -190,8 +190,8 @@ if (!$logged || $logged->role !== 'admin') {
                     <p class="text-white text-xs font-bold truncate"><?= $logged->nom ?></p>
                     <p class="text-[#9db9a6] text-[10px] truncate"><?= $logged->email ?></p>
                 </div>
-                <a href="./../logout.php">
-                    <button onclick="location.href='logout.php'"
+                <a href="/ASSAD_V2/Public/Auth/logout.php">
+                    <button
                         class="p-1.5 rounded-md text-[#9db9a6] hover:text-red-400 hover:bg-red-400/10 transition-all"
                         title="Logout">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
