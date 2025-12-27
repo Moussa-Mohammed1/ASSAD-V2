@@ -23,6 +23,21 @@ class VisitesGuidees
         $this->prix = $prix;
     }
 
+    public function getAllVisitesByGuide($id_guide)
+    {
+        $pdo = new Database();
+        $sql = 'SELECT * FROM visitesguidees WHERE id_user = :idu';
+        $pdo->query($sql);
+        $pdo->bind(':idu', $id_guide);
+        $pdo->execute();
+        if ($pdo->rowCount() > 0) {
+            $visites = [];
+            $visites = $pdo->get();
+            return $visites;
+        } else {
+            return null;
+        }
+    }
     public function getAllVisites($status = null)
     {
         $pdo = new Database();
