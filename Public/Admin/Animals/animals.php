@@ -199,11 +199,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                 <span class="material-symbols-outlined group-hover:scale-110 transition-transform">landscape</span>
                 <p class="text-sm font-medium leading-normal">Habitats</p>
             </a>
-            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-surface-dark/50 transition-colors group text-[#9db9a6] hover:text-white"
-                href="/ASSAD_V2/Public/Admin/Tours/tours.php">
-                <span class="material-symbols-outlined group-hover:scale-110 transition-transform">map</span>
-                <p class="text-sm font-medium leading-normal">Guided Tours</p>
-            </a>
+
 
         </nav>
         <div class="p-4 border-t border-[#28392e] profile-admin">
