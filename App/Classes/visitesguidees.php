@@ -67,6 +67,15 @@ class VisitesGuidees
         }
     }
 
+    public function getVisiteById($id_visite)
+    {
+        $pdo = new Database();
+        $sql = 'SELECT * FROM visitesguidees WHERE id_visite = :id';
+        $pdo->query($sql);
+        $pdo->bind(':id', $id_visite);
+        return $pdo->single();
+    }
+
     public function addVisite()
     {
         $pdo = new Database();
@@ -84,7 +93,7 @@ class VisitesGuidees
         $pdo->execute();
     }
 
-    public function updateVisite($titre, $dateHeure, $langue, $capaciteMax, $status, $duree, $prix)
+    public function updateVisite($id_visite, $titre, $dateHeure, $langue, $capaciteMax, $status, $duree, $prix)
     {
         $pdo = new Database();
         $sql = 'UPDATE visitesguidees
@@ -95,8 +104,10 @@ class VisitesGuidees
                     capacite_max = :max,
                     `status` = :stat,
                     duree = :duree, 
-                    prix = :prix';
+                    prix = :prix
+                WHERE id_visite = :idv';
         $pdo->query($sql);
+        $pdo->bind(':idv', $id_visite);
         $pdo->bind(':titre', $titre);
         $pdo->bind(':dateh', $dateHeure);
         $pdo->bind(':lang', $langue);
@@ -132,5 +143,14 @@ class VisitesGuidees
         } else {
             return null;
         }
+    }
+
+    public function cancelVisite($id_visite)
+    {
+        $pdo = new Database();
+        $sql = "UPDATE visitesguidees SET status = 'CANCELLED' WHERE id_visite = :idv";
+        $pdo->query($sql);
+        $pdo->bind(':idv', $id_visite);
+        $pdo->execute();
     }
 }
