@@ -31,12 +31,23 @@ class Reservation
         $pdo->bind(':idg', $id_guide);
         $pdo->execute();
         if ($pdo->rowCount() > 0) {
-                $reservations = [];
-                $reservations = $pdo->get();
-                return $reservations;
-            } else {
-                return null;
-            }
+            $reservations = [];
+            $reservations = $pdo->get();
+            return $reservations;
+        } else {
+            return null;
+        }
+    }
+
+    public function getAllReservationByvisite($id_visite)
+    {
+        $pdo = new Database();
+        $sql = 'SELECT COUNT(*) as total_reservations FROM reservation WHERE id_visite = :idv';
+        $pdo->query($sql);
+        $pdo->bind(':idv', $id_visite);
+        $pdo->execute();
+        $result = $pdo->single();
+        return $result ? $result->total_reservations : 0;
     }
     public function getAllReservations($id_user = null)
     {
