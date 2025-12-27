@@ -19,7 +19,7 @@ class Habitat
     {
         $pdo = new Database();
         $sql = 'INSERT INTO habitat(nom, typeclimat, `description`, zonezoo)
-                    VALUES (:nom, :typec, : descr, :zonez)
+                    VALUES (:nom, :typec, :descr, :zonez)
                     ';
         $pdo->query($sql);
         $pdo->bind(':nom', $this->nom);
@@ -47,19 +47,22 @@ class Habitat
         $pdo->execute();
     }
 
-    public function deleteHabitat()
+    public function deleteHabitat($id_habitat)
     {
         $pdo = new Database();
-        $sql = 'DELETE FROM habitat WHERE nom = :nom';
+        $sql = 'DELETE FROM habitat WHERE id_habitat = :idh';
         $pdo->query($sql);
-        $pdo->bind(':nom', $this->nom);
+        $pdo->bind(':idh', $id_habitat);
         $pdo->execute();
     }
 
     public function getHabitats()
     {
         $pdo = new Database();
-        $sql = 'SELECT * FROM habitat';
+        $sql = 'SELECT h.*, COUNT(a.id_animal) as animal_count 
+                FROM habitat h 
+                LEFT JOIN animal a ON h.id_habitat = a.id_habitat 
+                GROUP BY h.id_habitat';
         $pdo->query($sql);
         $pdo->execute();
         if ($pdo->rowCount() > 0) {
