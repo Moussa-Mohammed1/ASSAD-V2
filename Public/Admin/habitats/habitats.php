@@ -1,17 +1,28 @@
 <?php
-include './../../config.php';
+include './../../../App/bootstrap.php';
 session_start();
-$logged = $_SESSION['loggeduser'] ?? ['nom' => 'Admin User', 'email' => 'admin@assad.zoo'];
-
-$habitats = [];
-$sql = "SELECT h.*, COUNT(a.id_animal) AS animal_count FROM habitat h LEFT JOIN animal a ON a.id_habitat = h.id_habitat GROUP BY h.id_habitat ORDER BY h.id_habitat DESC";
-$res = $conn->query($sql);
-if ($res) {
-    while ($r = $res->fetch_assoc()) {
-        $habitats[] = $r;
-    }
+$loggeduser = $_SESSION['loggeduser'];
+if (!$loggeduser) {
+    header('Location: ./../../auth/login.php');
+    exit;
 }
 
+$habitat = new Habitat();
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['add_habitat'])) {
+        $newHabitat = new Habitat($_POST['nom'], $_POST['typeclimat'], $_POST['description'], $_POST['zonezoo']);
+        $newHabitat->addHabitat();
+    } elseif (isset($_POST['update_habitat'])) {
+        $habitat->updateHabitat($_POST['id_habitat'], $_POST['nom'], $_POST['description'], $_POST['typeclimat'], $_POST['zonezoo']);
+    } elseif (isset($_POST['delete_habitat'])) {
+        $habitat->deleteHabitat($_POST['id_habitat']);
+    }
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
+}
+
+$habitats = $habitat->getHabitats();
 ?>
 <!DOCTYPE html>
 <html class="dark" lang="en">
@@ -193,8 +204,8 @@ if ($res) {
                 </div>
 
                 <div class="flex flex-col flex-1 min-w-0">
-                    <p class="text-white text-xs font-bold truncate"><?= $logged['nom'] ?></p>
-                    <p class="text-[#9db9a6] text-[10px] truncate"><?= $logged['email'] ?></p>
+                    <p class="text-white text-xs font-bold truncate"><?= $loggeduser->nom ?></p>
+                    <p class="text-[#9db9a6] text-xs truncate"><?= $loggeduser->email ?></p>
                 </div>
                 <a href="/ASSAD_V2/Public/Auth/logout.php">
                     <button
@@ -282,7 +293,7 @@ if ($res) {
                                 </tr>
                             </thead>
                             <tbody class="text-sm divide-y divide-white/5">
-                                <?php if (count($habitats) === 0): ?>
+                                <?php if (!isset($habitats) || count($habitats) === 0): ?>
                                     <tr class="group hover:bg-white/[0.02] transition-colors">
                                         <td class="py-4 px-6" colspan="6">
                                             <p class="text-[#9db9a6] text-sm">No habitats found.</p>
@@ -297,17 +308,17 @@ if ($res) {
                                                     <div>
                                                         <p
                                                             class="font-bold text-white group-hover:text-primary transition-colors">
-                                                            <?php echo htmlspecialchars($h['nom']); ?>
+                                                            <?php echo htmlspecialchars($h->nom); ?>
                                                         </p>
                                                         <p class="text-[#5a6b60] text-xs mt-0.5">Area:
-                                                            <?php echo htmlspecialchars($h['zonezoo'] ?: '—'); ?>
+                                                            <?php echo htmlspecialchars($h->zonezoo ?: '—'); ?>
                                                         </p>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td class="py-4 px-6">
                                                 <span
-                                                    class="px-2.5 py-1 rounded-md bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 text-xs font-bold inline-block"><?php echo htmlspecialchars($h['typeclimat']); ?></span>
+                                                    class="px-2.5 py-1 rounded-md bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 text-xs font-bold inline-block"><?php echo htmlspecialchars($h->typeclimat); ?></span>
                                             </td>
                                             <td class="py-4 px-6">
                                                 <div class="flex flex-col gap-1 text-[#9db9a6]">
@@ -323,13 +334,13 @@ if ($res) {
                                                 <div class="flex -space-x-2">
                                                     <div
                                                         class="h-8 w-8 rounded-full ring-2 ring-surface-dark bg-[#2d4034] text-white flex items-center justify-center text-[10px] font-bold">
-                                                        <?php echo (intval($h['animal_count']) > 0 ? '+' . intval($h['animal_count']) : '0'); ?>
+                                                        <?php echo (intval($h->animal_count) > 0 ? '+' . intval($h->animal_count) : '0'); ?>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td class="py-4 px-6">
                                                 <div class="flex items-center gap-2">
-                                                    <?php if (intval($h['animal_count']) > 0): ?>
+                                                    <?php if (intval($h->animal_count) > 0): ?>
                                                         <span class="relative flex h-2.5 w-2.5"><span
                                                                 class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span><span
                                                                 class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span></span>
@@ -342,17 +353,18 @@ if ($res) {
                                             </td>
                                             <td class="py-4 px-6 text-right">
                                                 <div class="flex items-center justify-end gap-2">
-                                                    <button type="button" data-id="<?php echo $h['id_habitat']; ?>"
-                                                        data-nom="<?php echo htmlspecialchars($h['nom']); ?>"
-                                                        data-typeclimat="<?php echo htmlspecialchars($h['typeclimat']); ?>"
-                                                        data-desc="<?php echo htmlspecialchars($h['description']); ?>"
-                                                        data-zonezoo="<?php echo htmlspecialchars($h['zonezoo']); ?>"
+                                                    <button type="button" data-id="<?php echo $h->id_habitat; ?>"
+                                                        data-nom="<?php echo htmlspecialchars($h->nom); ?>"
+                                                        data-typeclimat="<?php echo htmlspecialchars($h->typeclimat); ?>"
+                                                        data-desc="<?php echo htmlspecialchars($h->description); ?>"
+                                                        data-zonezoo="<?php echo htmlspecialchars($h->zonezoo); ?>"
                                                         class="h-8 w-8 rounded-lg flex items-center justify-center text-[#9db9a6] hover:text-primary hover:bg-primary/10 transition-colors edit-hab-btn"
                                                         title="Edit Details">
                                                         <span class="material-symbols-outlined text-[18px]">edit</span>
                                                     </button>
-                                                    <form method="post" action="./delete.php" style="display:inline-block;">
-                                                        <input type="hidden" name="id" value="<?php echo $h['id_habitat']; ?>">
+                                                    <form method="post" action="" style="display:inline-block;" onsubmit="return confirm('Are you sure?');">
+                                                        <input type="hidden" name="id_habitat" value="<?php echo $h->id_habitat; ?>">
+                                                        <input type="hidden" name="delete_habitat" value="1">
                                                         <button type="submit"
                                                             class="h-8 w-8 rounded-lg flex items-center justify-center text-[#9db9a6] hover:text-red-500 hover:bg-red-500/10 transition-colors"
                                                             title="Delete Habitat">
@@ -384,7 +396,7 @@ if ($res) {
                     </div>
                 </div>
             </div>
-            <div class="fixed inset-0 backdrop-blur-sm flex justify-center items-center z-50">
+            <div id="new-habitat-modal" class="hidden fixed inset-0 backdrop-blur-sm flex justify-center items-center z-50">
                 <div
                     class="w-full md:w-[400px] border-l border-[#28392e] bg-background-dark/50 backdrop-blur-xl overflow-y-auto flex flex-col h-full relative z-20 shadow-2xl">
                     <div
@@ -393,11 +405,12 @@ if ($res) {
                             <h3 class="text-white text-lg font-bold">New Habitat</h3>
                             <p class="text-[#9db9a6] text-xs">Create a new environment</p>
                         </div>
-                        <button class="text-[#9db9a6] hover:text-white transition-colors">
+                        <button class="close-modal-btn text-[#9db9a6] hover:text-white transition-colors">
                             <span class="material-symbols-outlined">close</span>
                         </button>
                     </div>
-                    <form action="./create.php" method="post" class="bg-black">
+                    <form action="" method="post" class="bg-black">
+                        <input type="hidden" name="add_habitat" value="1">
                         <div class="p-6 flex flex-col gap-6">
                             <div class="space-y-4">
                                 <p
@@ -464,7 +477,7 @@ if ($res) {
                         </div>
                         <div class="p-6 border-t border-[#28392e] bg-background-dark mt-auto sticky bottom-0">
                             <div class="flex gap-3">
-                                <button type="button" onclick="this.form.reset();"
+                                <button type="button" onclick="document.getElementById('new-habitat-modal').classList.add('hidden')"
                                     class="flex-1 py-2.5 rounded-lg border border-white/10 text-white hover:bg-white/5 transition-colors text-sm font-medium">Cancel</button>
                                 <button type="submit"
                                     class="flex-1 py-2.5 rounded-lg bg-primary text-black hover:bg-white transition-colors text-sm font-bold shadow-lg shadow-primary/20">Create
@@ -474,9 +487,136 @@ if ($res) {
                     </form>
                 </div>
             </div>
+            <div id="edit-habitat-modal" class="hidden fixed inset-0 backdrop-blur-sm flex justify-center items-center z-50">
+                <div
+                    class="w-full md:w-[400px] border-l border-[#28392e] bg-background-dark/50 backdrop-blur-xl overflow-y-auto flex flex-col h-full relative z-20 shadow-2xl">
+                    <div
+                        class="p-6 border-b border-[#28392e] flex justify-between items-center bg-background-dark sticky top-0 z-10">
+                        <div>
+                            <h3 class="text-white text-lg font-bold">Edit Habitat</h3>
+                            <p class="text-[#9db9a6] text-xs">Update environment details</p>
+                        </div>
+                        <button class="close-modal-btn text-[#9db9a6] hover:text-white transition-colors">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
+                    <form action="" method="post" class="bg-black">
+                        <input type="hidden" name="update_habitat" value="1">
+                        <input type="hidden" name="id_habitat" id="edit-id_habitat">
+                        <div class="p-6 flex flex-col gap-6">
+                            <div class="space-y-4">
+                                <p
+                                    class="text-xs font-bold text-white uppercase tracking-wider border-b border-white/5 pb-2">
+                                    General Information</p>
+                                <div class="space-y-1.5">
+                                    <label class="text-sm font-medium text-[#9db9a6]">Habitat Name</label>
+                                    <input name="nom" id="edit-nom"
+                                        class="w-full bg-surface-dark border-none rounded-lg text-white placeholder-white/20 focus:ring-1 focus:ring-primary text-sm py-2.5"
+                                        placeholder="e.g., Northern Savannah" type="text" required />
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-sm font-medium text-[#9db9a6]">Biome Type</label>
+                                    <select name="typeclimat" id="edit-typeclimat"
+                                        class="w-full bg-surface-dark border-none rounded-lg text-white focus:ring-1 focus:ring-primary text-sm py-2.5"
+                                        required>
+                                        <option value="">Select Biome...</option>
+                                        <option>Savannah Grassland</option>
+                                        <option>Tropical Rainforest</option>
+                                        <option>Desert / Arid</option>
+                                        <option>Wetlands / Aquatic</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-sm font-medium text-[#9db9a6]">Description</label>
+                                    <textarea name="description" id="edit-description"
+                                        class="w-full bg-surface-dark border-none rounded-lg text-white placeholder-white/20 focus:ring-1 focus:ring-primary text-sm py-2.5 resize-none"
+                                        placeholder="Describe the environment, vegetation, and terrain..."
+                                        rows="3"></textarea>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <p
+                                    class="text-xs font-bold text-white uppercase tracking-wider border-b border-white/5 pb-2">
+                                    Environment Controls</p>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="space-y-1.5">
+                                        <label class="text-sm font-medium text-[#9db9a6] flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-xs">thermostat</span> Avg. Temp
+                                        </label>
+                                        <div class="relative">
+                                            <input
+                                                class="w-full bg-surface-dark border-none rounded-lg text-white focus:ring-1 focus:ring-primary text-sm py-2.5 pr-8"
+                                                type="number" value="28" />
+                                            <span class="absolute right-3 top-2.5 text-[#9db9a6] text-sm">°C</span>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-1.5">
+                                        <label class="text-sm font-medium text-[#9db9a6] flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-xs">water_drop</span> Humidity
+                                        </label>
+                                        <div class="relative">
+                                            <input
+                                                class="w-full bg-surface-dark border-none rounded-lg text-white focus:ring-1 focus:ring-primary text-sm py-2.5 pr-8"
+                                                type="number" value="45" />
+                                            <span class="absolute right-3 top-2.5 text-[#9db9a6] text-sm">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <input type="hidden" name="zonezoo" id="edit-zonezoo" value="">
+                        </div>
+                        <div class="p-6 border-t border-[#28392e] bg-background-dark mt-auto sticky bottom-0">
+                            <div class="flex gap-3">
+                                <button type="button" onclick="document.getElementById('edit-habitat-modal').classList.add('hidden')"
+                                    class="flex-1 py-2.5 rounded-lg border border-white/10 text-white hover:bg-white/5 transition-colors text-sm font-medium">Cancel</button>
+                                <button type="submit"
+                                    class="flex-1 py-2.5 rounded-lg bg-primary text-black hover:bg-white transition-colors text-sm font-bold shadow-lg shadow-primary/20">Save Changes</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </main>
-    <script src="/ASSAD_V2/assets/js/habitats.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const newModal = document.getElementById('new-habitat-modal');
+            const editModal = document.getElementById('edit-habitat-modal');
+            const openNewBtn = document.getElementById('open-new-hab');
+            const closeBtns = document.querySelectorAll('.close-modal-btn');
+
+            if (openNewBtn) {
+                openNewBtn.onclick = () => newModal.classList.remove('hidden');
+            }
+
+            closeBtns.forEach(btn => {
+                btn.onclick = () => {
+                    newModal.classList.add('hidden');
+                    editModal.classList.add('hidden');
+                };
+            });
+
+            document.addEventListener('click', (e) => {
+                const trigger = e.target.closest('.edit-hab-btn');
+                if (trigger) {
+                    document.getElementById('edit-id_habitat').value = trigger.dataset.id || '';
+                    document.getElementById('edit-nom').value = trigger.dataset.nom || '';
+                    document.getElementById('edit-typeclimat').value = trigger.dataset.typeclimat || '';
+                    document.getElementById('edit-description').value = trigger.dataset.desc || '';
+                    document.getElementById('edit-zonezoo').value = trigger.dataset.zonezoo || '';
+                    
+                    editModal.classList.remove('hidden');
+                }
+            });
+
+            window.onclick = (e) => {
+                if (e.target === newModal) newModal.classList.add('hidden');
+                if (e.target === editModal) editModal.classList.add('hidden');
+            };
+        });
+    </script>
 </body>
 
 </html>
