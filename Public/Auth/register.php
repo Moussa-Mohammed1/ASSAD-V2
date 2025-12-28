@@ -7,11 +7,11 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $old = $_POST;
     $nom = $_POST['nom'];
     $email = $_POST['email'];
-    $password = $_POST['password'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $role = $_POST['role'];
     $user = new inscription($nom, $email, $role, $password);
     $result = $user->validateForm();
-    if (!$result) {
+    if ($result == null) {
         $user->signUp();
         header('Location: ./login.php');
         exit();
