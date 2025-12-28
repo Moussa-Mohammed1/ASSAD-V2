@@ -1,10 +1,3 @@
-<?php
-include './../Classes/inscription.php';
-include './../config/config.php';
-session_start();
-if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-}
-?>
 <!DOCTYPE html>
 
 <html class="dark scroll-smooth" lang="en">
@@ -161,7 +154,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                         class="hidden sm:flex min-w-[80px] cursor-pointer items-center justify-center rounded-full h-10 px-5 bg-white/5 hover:bg-white/10 text-white text-sm font-semibold transition-all border border-transparent hover:border-white/20">
                         Login
                     </a>
-                    <a href="/ASSAD/auth/register.php"
+                    <a href="/ASSAD_V2/Public/Auth/register.php"
                         class="flex min-w-[100px] cursor-pointer items-center justify-center rounded-full h-10 px-5 bg-primary hover:bg-primary-dark text-background-dark text-sm font-bold shadow-md shadow-primary/20 transition-all">
                         Sign Up
                     </a>
@@ -197,7 +190,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                         matches. The official Virtual Zoo experience for supporters and families.
                     </p>
                     <div class="mt-4 flex flex-col sm:flex-row gap-4 w-full justify-center">
-                        <a href="/ASSAD/auth/register.php"
+                        <a href="/ASSAD_V2/Public/Auth/register.php"
                             class="group flex h-14 w-full sm:w-auto min-w-[200px] cursor-pointer items-center justify-center gap-2 rounded-full bg-primary px-8 text-background-dark text-base font-bold transition-all hover:bg-primary-dark hover:scale-105">
                             <span>Start Exploration</span>
                             <span
