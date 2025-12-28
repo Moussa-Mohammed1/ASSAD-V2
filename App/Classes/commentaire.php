@@ -108,6 +108,18 @@ class Commentaire
         }
     }
 
+    public function hasUserCommented($id_user, $id_visite)
+    {
+        $pdo = new Database();
+        $sql = "SELECT COUNT(*) as count FROM commentaire WHERE id_user = :idu AND id_visite = :idv";
+        $pdo->query($sql);
+        $pdo->bind(':idu', $id_user);
+        $pdo->bind(':idv', $id_visite);
+        $pdo->execute();
+        $result = $pdo->single();
+        return $result && $result->count > 0;
+    }
+
     public function getCommentsByGuide($id_guide)
     {
         $pdo = new Database();
