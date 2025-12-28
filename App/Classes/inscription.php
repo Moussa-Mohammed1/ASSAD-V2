@@ -13,16 +13,13 @@ class inscription extends Utilisateur
         $errors = [];
         if (empty($this->nom) || !preg_match('/^[a-zA-Z\s]+$/', $this->nom)) {
             $errors['nom'] = 'Name must contains letters and spaces and not empty';
-            $errors['nomERR'] = $this->nom;
         }
         if (empty($this->email) || !filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
             $errors['email'] = 'Invalid email format';
-            $errors['emailERR'] = $this->email;
         }
-        $availableRoles = ['Visitor', 'guide'];
+        $availableRoles = ['visitor', 'guide'];
         if (empty($this->role) || !in_array($this->role, $availableRoles)) {
             $errors['role'] = 'Please select a role';
-            $errors['roleERR'] = $this->role;
         }
         return empty($errors) ? null : $errors;
     }
@@ -37,12 +34,7 @@ class inscription extends Utilisateur
         $pdo->bind(':email', $this->email);
         $pdo->bind(':rol', $this->role);
         $pdo->bind(':pass', $this->MotPasseHash);
-        if ($this->role == 'guide') {
-            $pdo->bind(':stat', '1');
-        }
-        else {
-            $pdo->bind(':stat', '0');
-        }
+        $pdo->bind(':stat', true);
         $pdo->execute();
     }
 }
