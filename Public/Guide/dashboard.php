@@ -129,11 +129,11 @@ if (!$logged || $logged->role !== 'guide') {
             </div>
             <div class="flex items-center gap-4 sm:gap-8">
                 <nav class="hidden md:flex items-center gap-6">
-                    <a class="text-primary text-sm font-medium" href="/ASSAD/Guide/dashboard.php">Dashboard</a>
+                    <a class="text-primary text-sm font-medium" href="/ASSAD_V2/Public/Guide/dashboard.php">Dashboard</a>
                     <a class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors"
                         href="/ASSAD_V2/Public/Guide/Tours/tours.php">My Tours</a>
                 </nav>
-                <a href="/ASSAD/Guide/Tours/create-tour.php"
+                <a href="/ASSAD_V2/public/guide/tours/create.php"
                     class="hidden sm:inline-flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-4 bg-primary text-[#111813] text-sm font-bold shadow-lg hover:bg-opacity-90 transition-all">
                     <span>Create Tour</span>
                 </a>
@@ -142,7 +142,7 @@ if (!$logged || $logged->role !== 'guide') {
                         class="text-gray-600 dark:text-gray-300 hover:text-red-400 transition-colors">
                         <span class="material-symbols-outlined">logout</span>
                     </a>
-                    <a href="/ASSAD/Guide/profile.php"
+                    <a href="/ASSAD_V2/Public/Guide/profile.php"
                         class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-transparent hover:border-primary transition-colors cursor-pointer"
                         data-alt="User profile avatar"
                         style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCoCV4spzIBmv7a6A9BMjRgr_a0agYRa3LNyDSYHzzGnguO62dec_My0oka-Oxvi_uaolPsu0PM5LiuCTdcutulEdx2zQ49D4wy4z5h0fQ9mhp3Z8iKFoS0m47NIlOsAnEN2C8cDVCtr7YHZcgQcqlAFbBghwbmb5o6ckkCC8blFRwJKx71mavngHe1PiHJ8S3ZKp_dlOEIGgzYWrcUjAjgo9tk0yo2aBJ9z6x1CtkdEUG-yDr_hnHiDheFPxMH4gXm_yyiO8GCR7ZW");'>
@@ -253,7 +253,7 @@ if (!$logged || $logged->role !== 'guide') {
                                                 </td>
 
                                                 <td class="py-4 px-6 text-sm text-gray-800 dark:text-[#e2f2e7]">
-                                                    <?= $row->visite ?>
+                                                    <?= $row->titre ?>
                                                 </td>
 
                                                 <td class="py-4 px-6 text-sm text-gray-600 dark:text-[#9db9a6]">
